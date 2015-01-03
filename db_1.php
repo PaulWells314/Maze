@@ -112,7 +112,7 @@ echo <<< _END
   </pre></form>
   <form action="db_1.php" method = "post" > <pre>
   name    <input type = "text" name = "move_name"  />
-          <input type = "text" name = "pos"  />
+  room    <input type = "text" name = "pos"  />
           <input type = "hidden" name = "mve" value="yes" />
           <input type = "submit" value = "MOVE" />
   </pre></form>
