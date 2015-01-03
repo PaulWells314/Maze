@@ -3,6 +3,8 @@ $db_server = mysql_connect('localhost', 'paul', 'wuzetian');
 if (!$db_server) die ("Unable to connect to MySQL: " . mysql_error());
 mysql_select_db('houses') or die('Unable to select database: ' . mysql_error());
 
+$mv   = '';
+
 if (isset($_POST['shw']))
 {
    $mv =  $_POST['show_name'];
@@ -14,7 +16,7 @@ if (isset($_POST['shw']))
    $type_r    =  $row[2];
    $room_id_r =  $row[3];
   
-   echo "Position: " . "Id: ". $id_r. " Name: " . $name_r." Room: ".$room_id_r;
+   echo " Name: " . $name_r." Room: ".$room_id_r;
    echo "<br />";
    
    // search for doors from current room
@@ -53,7 +55,7 @@ if (isset($_POST['mve']))
    $room_id_r =  $row[3];
    $query =  "UPDATE avatars SET room_id=".$pos." WHERE name='".$mv."'";
    mysql_query($query);
-   echo "New position: " . "Id: ". $id_r. " Name: " . $name_r." Room: ".$pos;
+   echo " Name: " . $name_r." Room: ".$pos;
    echo "<br />";
    
    // search for doors from current room
@@ -106,12 +108,12 @@ echo <<< _END
           <input type = "submit" value = "ADD RECORD" />
   </pre></form>
   <form action="db_1.php" method = "post" > <pre>
-  name    <input type = "text" name = "show_name"  />
+  name    <input type = "text" name = "show_name" value = $mv />
           <input type = "hidden" name = "shw" value="yes" />
           <input type = "submit" value = "SHOW" />
   </pre></form>
   <form action="db_1.php" method = "post" > <pre>
-  name    <input type = "text" name = "move_name"  />
+  name    <input type = "text" name = "move_name" value = $mv />
   room    <input type = "text" name = "pos"  />
           <input type = "hidden" name = "mve" value="yes" />
           <input type = "submit" value = "MOVE" />
