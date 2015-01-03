@@ -3,9 +3,9 @@ $db_server = mysql_connect('localhost', 'paul', 'wuzetian');
 if (!$db_server) die ("Unable to connect to MySQL: " . mysql_error());
 mysql_select_db('houses') or die('Unable to select database: ' . mysql_error());
 
-if (isset($_POST['mve']))
+if (isset($_POST['shw']))
 {
-   $mv =  $_POST['move_name'];
+   $mv =  $_POST['show_name'];
    $query2 =  "SELECT * FROM avatars WHERE name='".$mv."'";
    $res = mysql_query($query2); 
    $row = mysql_fetch_row($res);
@@ -13,24 +13,71 @@ if (isset($_POST['mve']))
    $name_r    =  $row[1];
    $type_r    =  $row[2];
    $room_id_r =  $row[3];
-   $query =  "UPDATE avatars SET room_id=".$room_id_r." WHERE name='".$mv."'";
+  
+   echo "Position: " . "Id: ". $id_r. " Name: " . $name_r." Room: ".$room_id_r;
+   echo "<br />";
+   
+   // search for doors from current room
+   $query =  "SELECT doors.id FROM doors, walls WHERE ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)) AND (walls.id IN (SELECT walls.id FROM walls, rooms WHERE walls.room_id=".$room_id_r."))";
+   $res = mysql_query($query);
+   
+   while ($row = mysql_fetch_row($res))
+   {
+      echo "door: " .$row[0];
+    
+      // what rooms are connected to this door ?
+      $query = "SELECT walls.room_id FROM walls, doors WHERE (doors.id=".$row[0]." AND ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)))";
+      $res2 = mysql_query($query);
+   
+      while ($nextroom = mysql_fetch_row($res2))
+      {
+         if ($room_id_r != $nextroom[0])
+         {
+            echo " room " .$nextroom[0];
+         }
+      }
+      echo "<br />";  
+   }   
+}
+
+if (isset($_POST['mve']))
+{
+   $mv =  $_POST['move_name'];
+   $pos =  $_POST['pos'];
+   $query2 =  "SELECT * FROM avatars WHERE name='".$mv."'";
+   $res = mysql_query($query2); 
+   $row = mysql_fetch_row($res);
+   $id_r      =  $row[0];
+   $name_r    =  $row[1];
+   $type_r    =  $row[2];
+   $room_id_r =  $row[3];
+   $query =  "UPDATE avatars SET room_id=".$pos." WHERE name='".$mv."'";
    mysql_query($query);
-   echo "New position: " . "Id: ". $id_r. " Name: " . $name_r." Room: ".$room_id_r;
+   echo "New position: " . "Id: ". $id_r. " Name: " . $name_r." Room: ".$pos;
    echo "<br />";
    
-   $query =  "SELECT doors.id FROM doors, walls WHERE (doors.walls_id_1=walls.id) AND (walls.id IN (SELECT walls.id FROM walls, rooms WHERE walls.room_id=".$room_id_r."))";
+   // search for doors from current room
+   $query =  "SELECT doors.id FROM doors, walls WHERE ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)) AND (walls.id IN (SELECT walls.id FROM walls, rooms WHERE walls.room_id=".$pos."))";
    $res = mysql_query($query);
-   $row = mysql_fetch_row($res);
-   echo "door " .$row[0];
-   echo "<br />";
-   $query =  "SELECT doors.id FROM doors, walls WHERE (doors.walls_id_2=walls.id) AND (walls.id IN (SELECT walls.id FROM walls, rooms WHERE walls.room_id=".$room_id_r."))";
-   $res = mysql_query($query);
-   $row = mysql_fetch_row($res);
-   echo "door " .$row[0];
-   echo "<br />";
    
+   while ($row = mysql_fetch_row($res))
+   {
+      echo "door: " .$row[0];
     
-    
+      // what rooms are connected to this door ?
+      $query = "SELECT walls.room_id FROM walls, doors WHERE (doors.id=".$row[0]." AND ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)))";
+      $res2 = mysql_query($query);
+   
+      while ($nextroom = mysql_fetch_row($res2))
+      {
+         if ($pos != $nextroom[0])
+         {
+            echo " room " .$nextroom[0];
+         }
+      }
+      echo "<br />";  
+   }  
+   
 }
 
 if (isset($_POST['id']) &&
@@ -59,7 +106,13 @@ echo <<< _END
           <input type = "submit" value = "ADD RECORD" />
   </pre></form>
   <form action="db_1.php" method = "post" > <pre>
+  name    <input type = "text" name = "show_name"  />
+          <input type = "hidden" name = "shw" value="yes" />
+          <input type = "submit" value = "SHOW" />
+  </pre></form>
+  <form action="db_1.php" method = "post" > <pre>
   name    <input type = "text" name = "move_name"  />
+          <input type = "text" name = "pos"  />
           <input type = "hidden" name = "mve" value="yes" />
           <input type = "submit" value = "MOVE" />
   </pre></form>
