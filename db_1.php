@@ -4,6 +4,8 @@ if (!$db_server) die ("Unable to connect to MySQL: " . mysql_error());
 mysql_select_db('houses') or die('Unable to select database: ' . mysql_error());
 
 $mv   = '';
+$mve = '';
+$roomlist = array();
 
 if (isset($_POST['shw']))
 {
@@ -23,6 +25,7 @@ if (isset($_POST['shw']))
    $query =  "SELECT doors.id FROM doors, walls WHERE ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)) AND (walls.id IN (SELECT walls.id FROM walls, rooms WHERE walls.room_id=".$room_id_r."))";
    $res = mysql_query($query);
    
+   $roomlist = array();
    while ($row = mysql_fetch_row($res))
    {
       echo "door: " .$row[0];
@@ -30,12 +33,13 @@ if (isset($_POST['shw']))
       // what rooms are connected to this door ?
       $query = "SELECT walls.room_id FROM walls, doors WHERE (doors.id=".$row[0]." AND ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)))";
       $res2 = mysql_query($query);
-   
+  
       while ($nextroom = mysql_fetch_row($res2))
       {
          if ($room_id_r != $nextroom[0])
          {
             echo " room " .$nextroom[0];
+            array_push($roomlist,$nextroom[0]); 
          }
       }
       echo "<br />";  
@@ -53,15 +57,54 @@ if (isset($_POST['mve']))
    $name_r    =  $row[1];
    $type_r    =  $row[2];
    $room_id_r =  $row[3];
-   $query =  "UPDATE avatars SET room_id=".$pos." WHERE name='".$mv."'";
-   mysql_query($query);
-   echo " Name: " . $name_r." Room: ".$pos;
-   echo "<br />";
+   
+   // search for doors from current room
+   $query =  "SELECT doors.id FROM doors, walls WHERE ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)) AND (walls.id IN (SELECT walls.id FROM walls, rooms WHERE walls.room_id=".$room_id_r."))";
+   $res = mysql_query($query);
+   
+   $roomlist = array();
+   while ($row = mysql_fetch_row($res))
+   {
+      //echo "door: " .$row[0];
+    
+      // what rooms are connected to this door ?
+      $query = "SELECT walls.room_id FROM walls, doors WHERE (doors.id=".$row[0]." AND ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)))";
+      $res2 = mysql_query($query);
+   
+      while ($nextroom = mysql_fetch_row($res2))
+      {
+         if ($room_id_r != $nextroom[0])
+         {
+            //echo " room " .$nextroom[0];
+            array_push($roomlist,$nextroom[0]); 
+         }
+      }
+      //echo "<br />";  
+   }  
+   
+   //echo $pos;
+   //var_dump($roomlist);
+   
+   $match = in_array((string)($pos), $roomlist);
+   //echo $match;
+   if ($match !== FALSE)
+   {
+      $query =  "UPDATE avatars SET room_id=".$pos." WHERE name='".$mv."'";
+      mysql_query($query);
+      echo " Name: " . $name_r." Room: ".$pos;
+      echo "<br />";
+   }
+   else
+   {
+      echo "bad room";
+      echo "<br />";
+   }
    
    // search for doors from current room
    $query =  "SELECT doors.id FROM doors, walls WHERE ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)) AND (walls.id IN (SELECT walls.id FROM walls, rooms WHERE walls.room_id=".$pos."))";
    $res = mysql_query($query);
    
+   $roomlist = array();
    while ($row = mysql_fetch_row($res))
    {
       echo "door: " .$row[0];
@@ -75,10 +118,12 @@ if (isset($_POST['mve']))
          if ($pos != $nextroom[0])
          {
             echo " room " .$nextroom[0];
+            array_push($roomlist,$nextroom[0]); 
          }
       }
       echo "<br />";  
    }  
+  
    
 }
 
