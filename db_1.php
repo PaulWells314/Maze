@@ -17,6 +17,7 @@ if (isset($_POST['shw']))
    $name_r    =  $row[1];
    $type_r    =  $row[2];
    $room_id_r =  $row[3];
+   
   
    echo " Name: " . $name_r." Room: ".$room_id_r;
    echo "<br />";
@@ -93,6 +94,12 @@ if (isset($_POST['mve']))
       mysql_query($query);
       echo " Name: " . $name_r." Room: ".$pos;
       echo "<br />";
+      
+      $query = "SELECT rooms.picname FROM rooms WHERE rooms.id='$pos'";
+      
+      $result = mysql_query($query);
+      $row = mysql_fetch_row($result);
+      $pic = $row[0];    
    }
    else
    {
@@ -144,6 +151,7 @@ if (isset($_POST['id']) &&
   mysql_query($query);
 }
 
+echo "<img src= '$pic'/";
 echo <<< _END
   <form action="db_1.php" method = "post" > <pre>
   id      <input type = "text" name ="id"  />
@@ -152,6 +160,8 @@ echo <<< _END
   room_id <input type = "text" name ="room_id"  /> 
           <input type = "submit" value = "ADD RECORD" />
   </pre></form>
+ 
+  
   <form action="db_1.php" method = "post" > <pre>
   name    <input type = "text" name = "show_name" value = $mv />
           <input type = "hidden" name = "shw" value="yes" />
