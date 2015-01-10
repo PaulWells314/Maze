@@ -6,6 +6,7 @@ mysql_select_db('houses') or die('Unable to select database: ' . mysql_error());
 $mv   = 'paul';
 $mve = '';
 $roomlist = array();
+$roomoption = '';
 
 if (isset($_POST['mve']))
 {
@@ -42,12 +43,12 @@ if (isset($_POST['mve']))
       }
       //echo "<br />";  
    }  
-   
-   //echo $pos;
+     echo "POS\n";
+     echo $pos;
    //var_dump($roomlist);
    
    $match = in_array((string)($pos), $roomlist);
-   //echo $match;
+  
    if ($match !== FALSE)
    {
       $query =  "UPDATE avatars SET room_id=".$pos." WHERE name='".$mv."'";
@@ -99,7 +100,7 @@ else
    }
    else
    {
-       $move = "paul";
+       $mv = "paul";
    }
    $query2 =  "SELECT * FROM avatars WHERE name='".$mv."'";
    $res = mysql_query($query2); 
@@ -171,7 +172,7 @@ if (isset($_POST['id']) &&
 }
 
 echo "<img src= '$pic'/";
-echo <<< _END
+echo <<< _END1
   <form action="db_1.php" method = "post" > <pre>
   id      <input type = "text" name ="id"  />
   name    <input type = "text" name ="name"  />
@@ -179,24 +180,40 @@ echo <<< _END
   room_id <input type = "text" name ="room_id"  /> 
           <input type = "submit" value = "ADD RECORD" />
   </pre></form>
- 
+_END1;
   
+echo <<< _END2
   <form action="db_1.php" method = "post" > <pre>
   name    <input type = "text" name = "show_name" value = $mv />
           <input type = "hidden" name = "shw" value="yes" />
           <input type = "submit" value = "SHOW" />
   </pre></form>
+  
+_END2;
+
+echo <<< _END3
   <form action="db_1.php" method = "post" > <pre>
   name    <input type = "text" name = "move_name" value = $mv />
-  room    <input type = "text" name = "pos"  />
           <input type = "hidden" name = "mve" value="yes" />
-          <input type = "submit" value = "MOVE" />
+                  
+_END3;
+
+echo <<< _END4
+next room <select name= "pos">
+_END4;
+  
+while ( $roomoption = array_pop($roomlist) )
+{
+   echo "<option value= $roomoption >".$roomoption."</option>";                       
+}
+echo "</select>";
+echo "<br />"; 
+echo <<< _END4
+<input type = "submit" value = "MOVE" />
   </pre></form>
-
-_END;
-
-
-
+_END4;
+  
+    
  $result = mysql_query("SELECT * FROM avatars");
 echo 'Author: ' . mysql_result($result, 0, 'type');
 ?>
