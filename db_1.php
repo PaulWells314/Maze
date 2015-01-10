@@ -43,8 +43,7 @@ if (isset($_POST['mve']))
       }
       //echo "<br />";  
    }  
-     echo "POS\n";
-     echo $pos;
+     
    //var_dump($roomlist);
    
    $match = in_array((string)($pos), $roomlist);
@@ -53,8 +52,8 @@ if (isset($_POST['mve']))
    {
       $query =  "UPDATE avatars SET room_id=".$pos." WHERE name='".$mv."'";
       mysql_query($query);
-      echo " Name: " . $name_r." Room: ".$pos;
-      echo "<br />";
+      //echo " Name: " . $name_r." Room: ".$pos;
+      //echo "<br />";
       
       $query = "SELECT rooms.picname FROM rooms WHERE rooms.id='$pos'";
       
@@ -64,8 +63,8 @@ if (isset($_POST['mve']))
    }
    else
    {
-      echo "bad room";
-      echo "<br />";
+      //echo "bad room";
+      //echo "<br />";
    }
    
    // search for doors from current room
@@ -75,7 +74,7 @@ if (isset($_POST['mve']))
    $roomlist = array();
    while ($row = mysql_fetch_row($res))
    {
-      echo "door: " .$row[0];
+      //echo "door: " .$row[0];
     
       // what rooms are connected to this door ?
       $query = "SELECT walls.room_id FROM walls, doors WHERE (doors.id=".$row[0]." AND ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)))";
@@ -85,11 +84,11 @@ if (isset($_POST['mve']))
       {
          if ($pos != $nextroom[0])
          {
-            echo " room " .$nextroom[0];
+            // echo " room " .$nextroom[0];
             array_push($roomlist,$nextroom[0]); 
          }
       }
-      echo "<br />";  
+      //echo "<br />";  
    }    
 }
 else 
@@ -111,8 +110,8 @@ else
    $room_id_r =  $row[3];
    
   
-   echo " Name: " . $name_r." Room: ".$room_id_r;
-   echo "<br />";
+   //echo " Name: " . $name_r." Room: ".$room_id_r;
+   //echo "<br />";
    
    // search for doors from current room
    $query =  "SELECT doors.id FROM doors, walls WHERE ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)) AND (walls.id IN (SELECT walls.id FROM walls, rooms WHERE walls.room_id=".$room_id_r."))";
@@ -121,7 +120,7 @@ else
    $roomlist = array();
    while ($row = mysql_fetch_row($res))
    {
-      echo "door: " .$row[0];
+      //echo "door: " .$row[0];
     
       // what rooms are connected to this door ?
       $query = "SELECT walls.room_id FROM walls, doors WHERE (doors.id=".$row[0]." AND ((doors.walls_id_1=walls.id) OR (doors.walls_id_2=walls.id)))";
@@ -131,7 +130,7 @@ else
       {
          if ($room_id_r != $nextroom[0])
          {
-            echo " room " .$nextroom[0];
+            //echo " room " .$nextroom[0];
             array_push($roomlist,$nextroom[0]); 
          }
       }
@@ -172,16 +171,7 @@ if (isset($_POST['id']) &&
 }
 
 echo "<img src= '$pic'/";
-echo <<< _END1
-  <form action="db_1.php" method = "post" > <pre>
-  id      <input type = "text" name ="id"  />
-  name    <input type = "text" name ="name"  />
-  type    <input type = "text" name ="type"  />
-  room_id <input type = "text" name ="room_id"  /> 
-          <input type = "submit" value = "ADD RECORD" />
-  </pre></form>
-_END1;
-  
+ 
 echo <<< _END2
   <form action="db_1.php" method = "post" > <pre>
   name    <input type = "text" name = "show_name" value = $mv />
@@ -209,11 +199,8 @@ while ( $roomoption = array_pop($roomlist) )
 echo "</select>";
 echo "<br />"; 
 echo <<< _END4
-<input type = "submit" value = "MOVE" />
+          <input type = "submit" value = "MOVE" />
   </pre></form>
 _END4;
-  
-    
- $result = mysql_query("SELECT * FROM avatars");
-echo 'Author: ' . mysql_result($result, 0, 'type');
+
 ?>
